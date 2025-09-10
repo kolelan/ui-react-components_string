@@ -1,0 +1,53 @@
+.tapContainer {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    transition: all 0.3s ease;
+}
+
+.circle {
+    border-radius: 50%;
+}
+
+.square {
+    border-radius: 0;
+}
+
+.triangleDown {
+    clip-path: polygon(50% 100%, 0 0, 100% 0);
+    background-clip: padding-box;
+}
+
+.triangleUp {
+    clip-path: polygon(50% 0%, 0% 100%, 100% 100%);
+    background-clip: padding-box;
+}
+
+.diamond {
+    clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%);
+    background-clip: padding-box;
+    transform: rotate(45deg);
+}
+
+.diamond .content {
+    transform: rotate(-45deg);
+}
+
+.content {
+    text-align: center;
+    font-weight: bold;
+    user-select: none;
+}
+.contentOnly {
+    background-color: transparent !important;
+    border: none !important;
+    width: auto !important;
+    height: auto !important;
+    display: inline-block;
+}
+
+.contentOnly .content {
+    transform: none !important;
+    position: static !important;
+}
