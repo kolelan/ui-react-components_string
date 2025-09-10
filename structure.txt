@@ -1,0 +1,18 @@
+string-component-tester/
+├── public/
+│   ├── index.html
+│   └── favicon.ico
+├── src/
+│   ├── components/
+│   │   ├── String/
+│   │   │   ├── String.jsx
+│   │   │   └── String.module.css
+│   │   └── Note/
+│   │       ├── Note.jsx
+│   │       └── Note.module.css
+│   ├── App.jsx
+│   ├── App.module.css
+│   ├── index.js
+│   └── index.css
+├── package.json
+└── README.md
