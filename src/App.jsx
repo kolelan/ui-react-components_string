@@ -6,6 +6,7 @@ import styles from './App.module.css';
 function App() {
     const [stringProps, setStringProps] = useState({
         size: 800,
+        stringNumber: 1,
         openNote: 'E',
         fretsCount: 12,
         tonic: 'C',
@@ -13,15 +14,16 @@ function App() {
         stringThickness: 2,
         fretColor: '#cccccc',
         fretThickness: 1,
-        spacingType: 'fixed',
+        spacingType: 'scale',
         fixedSpacing: 30,
         scaleLength: 648,
         pressedFret: 0,
+        openNoteOffset: -20,
         noteConfigs: {
             default: {
                 showNote: true,
-                showNoteName: true,
                 showInterval: false,
+                centerInFret: false,
                 size: 30,
                 shape: 'circle',
                 bgColor: '#ffffff',
@@ -45,6 +47,23 @@ function App() {
             '6': { bgColor: '#cc99ff' },
             'b7': { bgColor: '#ff99ff' },
             '7': { bgColor: '#ff99cc' }
+        },
+        barLabelConfig: {
+            show: false,
+            fretsToShow: '3,5,7,9,12,15,17,19,21,24',
+            fontSize: 12,
+            numberFormat: 'arabic',
+            distanceFromString: 20,
+            position: 'between',
+            color: '#000000'
+        },
+        stringLabelConfig: {
+            show: true,
+            size: 20,
+            offsetX: -70,
+            shape: 'circle',
+            bgColor: '#000000',
+            contentColor: '#ffffff'
         }
     });
 

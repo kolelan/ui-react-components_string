@@ -1,7 +1,12 @@
 .stringContainer {
     position: relative;
-    height: 100px;
+    height: 70px;
     margin: 20px 0;
+}
+
+.stringLabel {
+    position: absolute;
+    z-index: 5;
 }
 
 .string {
@@ -11,7 +16,7 @@
     z-index: 1;
 }
 
-.fretContainer {
+.fret {
     position: absolute;
     top: 0;
     bottom: 0;
@@ -22,12 +27,25 @@
 .notePosition {
     position: absolute;
     top: 50%;
-    left: 50%;
     transform: translate(-50%, -50%);
     cursor: pointer;
     z-index: 3;
 }
 
 .notePosition.pressed {
-    /* Стили для зажатого лада */
+    box-shadow: 0 0 0px rgba(255, 0, 0, 0.5);
+}
+
+.barLabel {
+    position: absolute;
+    left: 0;
+    transform: translateX(-50%);
+    z-index: 4;
+    white-space: nowrap;
+    font-weight: bold;
+}
+
+.barLabel span {
+    display: block;
+    text-align: center;
 }
