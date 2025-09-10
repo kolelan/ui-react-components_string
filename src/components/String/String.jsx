@@ -16,18 +16,22 @@ const StringComponent = ({
                              fixedSpacing = 20,
                              scaleLength = 648,
                              pressedFret = 0,
+                             fingerNumber = 0,
                              openNoteOffset = -20,
                              noteConfigs = {},
                              barLabelConfig = {},
                              stringLabelConfig = {},
+                             fingerNumberConfig = {},
                              onFretClick
                          }) => {
     const [selectedFret, setSelectedFret] = useState(pressedFret);
+    const [selectedFinger, setSelectedFinger] = useState(fingerNumber);
 
-    // Обновляем внутреннее состояние при изменении пропса pressedFret
+    // Обновляем внутреннее состояние при изменении пропсов pressedFret и fingerNumber
     useEffect(() => {
-    setSelectedFret(pressedFret);
-    }, [pressedFret]);
+        setSelectedFret(pressedFret);
+        setSelectedFinger(fingerNumber);
+    }, [pressedFret, fingerNumber]);
 
     const notes = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'];
     const intervals = ['1', 'b2', '2', 'b3', '3', '4', 'b5', '5', 'b6', '6', 'b7', '7'];
@@ -205,6 +209,23 @@ const StringComponent = ({
                         onClick={() => handleFretClick(fret)}
                     >
                         <Note {...noteConfig} />
+                        {/* Отображение номера пальца для нажатого лада */}
+                        {isPressed && selectedFinger > 0 && (
+                            <div
+                                className={styles.fingerNumber}
+                                style={{
+                                    position: 'absolute',
+                                    top: `${fingerNumberConfig.offsetY || -25}px`,
+                                    left: '50%',
+                                    transform: 'translateX(-50%)',
+                                    fontSize: `${fingerNumberConfig.fontSize || 14}px`,
+                                    color: fingerNumberConfig.color || '#000000',
+                                    fontWeight: 'bold'
+                                }}
+                            >
+                                {selectedFinger}
+                            </div>
+                        )}
                     </div>
                 );
             })}

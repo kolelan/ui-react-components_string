@@ -36,6 +36,12 @@
     box-shadow: 0 0 0px rgba(255, 0, 0, 0.5);
 }
 
+.fingerNumber {
+    position: absolute;
+    z-index: 4;
+    font-weight: bold;
+}
+
 .barLabel {
     position: absolute;
     left: 0;

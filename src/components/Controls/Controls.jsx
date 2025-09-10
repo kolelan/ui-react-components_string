@@ -40,6 +40,15 @@ const Controls = ({ props, updateProps }) => {
         });
     };
 
+    const handleFingerNumberConfigChange = (configKey, value) => {
+        updateProps({
+            fingerNumberConfig: {
+                ...props.fingerNumberConfig || {},
+                [configKey]: value
+            }
+        });
+    };
+
     const getCurrentConfigValue = (configKey, interval = selectedInterval) => {
         if (interval === 'default') {
             return props.noteConfigs.default?.[configKey] ?? '';
@@ -127,6 +136,19 @@ const Controls = ({ props, updateProps }) => {
             </div>
 
             <div className={styles.controlGroup}>
+                <label>Finger Number:</label>
+                <input
+                    type="range"
+                    min="0"
+                    max="4"
+                    value={props.fingerNumber || 0}
+                    onChange={(e) => handleChange('fingerNumber', parseInt(e.target.value))}
+                />
+                <span>{props.fingerNumber || 0}</span>
+                <small>0 = no finger</small>
+            </div>
+
+            <div className={styles.controlGroup}>
                 <label>Frets Count:</label>
                 <input
                     type="range"
@@ -183,6 +205,43 @@ const Controls = ({ props, updateProps }) => {
                     <span>{props.fixedSpacing}px</span>
                 </div>
             )}
+
+            <div className={styles.sectionDivider}>
+                <h3>Finger Number Configuration</h3>
+            </div>
+
+            <div className={styles.controlGroup}>
+                <label>Vertical Offset:</label>
+                <input
+                    type="range"
+                    min="-50"
+                    max="0"
+                    value={props.fingerNumberConfig?.offsetY || -25}
+                    onChange={(e) => handleFingerNumberConfigChange('offsetY', parseInt(e.target.value))}
+                />
+                <span>{props.fingerNumberConfig?.offsetY || -25}px</span>
+            </div>
+
+            <div className={styles.controlGroup}>
+                <label>Font Size:</label>
+                <input
+                    type="range"
+                    min="8"
+                    max="24"
+                    value={props.fingerNumberConfig?.fontSize || 14}
+                    onChange={(e) => handleFingerNumberConfigChange('fontSize', parseInt(e.target.value))}
+                />
+                <span>{props.fingerNumberConfig?.fontSize || 14}px</span>
+            </div>
+
+            <div className={styles.controlGroup}>
+                <label>Color:</label>
+                <input
+                    type="color"
+                    value={props.fingerNumberConfig?.color || '#000000'}
+                    onChange={(e) => handleFingerNumberConfigChange('color', e.target.value)}
+                />
+            </div>
 
             <div className={styles.sectionDivider}>
                 <h3>String Label Configuration</h3>

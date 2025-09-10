@@ -18,6 +18,7 @@ function App() {
         fixedSpacing: 30,
         scaleLength: 648,
         pressedFret: 0,
+        fingerNumber: 0,
         openNoteOffset: -20,
         noteConfigs: {
             default: {
@@ -64,6 +65,11 @@ function App() {
             shape: 'circle',
             bgColor: '#000000',
             contentColor: '#ffffff'
+        },
+        fingerNumberConfig: {
+            offsetY: -25,
+            fontSize: 14,
+            color: '#000000'
         }
     });
 
