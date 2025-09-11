@@ -10,9 +10,20 @@
     gap: 5px;
 }
 
+.controlGroupRow {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 10px;
+}
+
 .controlGroup label {
     font-weight: bold;
     margin-bottom: 3px;
+}
+
+.controlGroupRow label {
+    margin-bottom: 0;
 }
 
 .sectionDivider {

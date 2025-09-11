@@ -6,6 +6,7 @@ const StringComponent = ({
                              size = 500,
                              stringNumber = 1,
                              openNote = 'E',
+                             fretStart = 0,
                              fretsCount = 24,
                              tonic = 'C',
                              stringColor = '#000000',
@@ -15,23 +16,21 @@ const StringComponent = ({
                              spacingType = 'fixed',
                              fixedSpacing = 20,
                              scaleLength = 648,
-                             pressedFret = 0,
-                             fingerNumber = 0,
+                             pressed = [], // [{ fret: number, funger: number }]
                              openNoteOffset = -20,
                              noteConfigs = {},
                              barLabelConfig = {},
                              stringLabelConfig = {},
                              fingerNumberConfig = {},
+                             enablePressedHighlight = true,
                              onFretClick
                          }) => {
-    const [selectedFret, setSelectedFret] = useState(pressedFret);
-    const [selectedFinger, setSelectedFinger] = useState(fingerNumber);
+    const [selectedPressed, setSelectedPressed] = useState(pressed);
 
-    // Обновляем внутреннее состояние при изменении пропсов pressedFret и fingerNumber
+    // Обновляем внутреннее состояние при изменении пропса pressed
     useEffect(() => {
-        setSelectedFret(pressedFret);
-        setSelectedFinger(fingerNumber);
-    }, [pressedFret, fingerNumber]);
+        setSelectedPressed(Array.isArray(pressed) ? pressed : []);
+    }, [pressed]);
 
     const notes = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'];
     const intervals = ['1', 'b2', '2', 'b3', '3', '4', 'b5', '5', 'b6', '6', 'b7', '7'];
@@ -71,7 +70,7 @@ const StringComponent = ({
         };
 
         const intervalConfig = noteConfigs[interval] || {};
-        const pressedConfig = isPressed ? (noteConfigs.pressed || {}) : {};
+        const pressedConfig = (isPressed && enablePressedHighlight) ? (noteConfigs.pressed || {}) : {};
 
         // Определяем что показывать: ноту или интервал
         const content = baseConfig.showInterval ? interval : note;
@@ -105,15 +104,15 @@ const StringComponent = ({
         const positions = [];
         for (let i = 1; i < fretPositions.length; i++) {
             const middlePosition = (fretPositions[i] + fretPositions[i - 1]) / 2;
-            positions.push({ position: middlePosition, fret: i });
+            positions.push({ position: middlePosition, fret: fretStart + i });
         }
         return positions;
-    }, [fretPositions, barLabelConfig.show]);
+    }, [fretPositions, barLabelConfig.show, fretStart]);
 
     const notePositions = useMemo(() => {
         const positions = [];
 
-        if (fretPositions.length > 0) {
+        if (fretPositions.length > 0 && fretStart === 0) {
             // Открытая нота (лад 0) со смещением влево
             const openNotePosition = fretPositions[0] + (openNoteOffset || -20);
             positions.push({ position: openNotePosition, fret: 0 });
@@ -122,11 +121,12 @@ const StringComponent = ({
         // Остальные ноты (между ладами)
         for (let i = 1; i < fretPositions.length; i++) {
             const middlePosition = (fretPositions[i] + fretPositions[i - 1]) / 2;
-            positions.push({ position: middlePosition, fret: i });
+            const fretNumber = fretStart + i;
+            positions.push({ position: middlePosition, fret: fretNumber });
         }
 
         return positions;
-    }, [fretPositions, openNoteOffset]);
+    }, [fretPositions, openNoteOffset, fretStart]);
 
     const getNoteForFret = (fret) => {
         const openNoteIndex = notes.indexOf(openNote);
@@ -137,7 +137,9 @@ const StringComponent = ({
     };
 
     const handleFretClick = (fret) => {
-        setSelectedFret(fret);
+        const existing = selectedPressed.find(p => p.fret === fret);
+        const updated = [{ fret, funger: existing?.funger ?? 0 }];
+        setSelectedPressed(updated);
         if (onFretClick) onFretClick(fret);
     };
 
@@ -196,7 +198,8 @@ const StringComponent = ({
             {/* Ноты */}
             {notePositions.map(({ position, fret }) => {
                 const note = getNoteForFret(fret);
-                const isPressed = fret === selectedFret;
+                const pressedItem = selectedPressed.find(p => p.fret === fret);
+                const isPressed = !!pressedItem;
                 const noteConfig = getNoteConfig(note, isPressed);
 
                 if (!noteConfig.showNote) return null;
@@ -210,7 +213,7 @@ const StringComponent = ({
                     >
                         <Note {...noteConfig} />
                         {/* Отображение номера пальца для нажатого лада */}
-                        {isPressed && selectedFinger > 0 && (
+                        {isPressed && (pressedItem?.funger ?? 0) > 0 && (
                             <div
                                 className={styles.fingerNumber}
                                 style={{
@@ -223,7 +226,7 @@ const StringComponent = ({
                                     fontWeight: 'bold'
                                 }}
                             >
-                                {selectedFinger}
+                                {pressedItem?.funger}
                             </div>
                         )}
                     </div>
@@ -234,14 +237,23 @@ const StringComponent = ({
             {barLabelConfig.show && barLabelPositions.map(({ position, fret }) => {
                 if (fretsToShow.length > 0 && !fretsToShow.includes(fret)) return null;
 
+                const isDots = (barLabelConfig.pattern || 'numbers') === 'dots';
                 const labelText = barLabelConfig.numberFormat === 'roman'
                     ? toRoman(fret)
                     : fret.toString();
 
-                const labelStyle = {
-                    fontSize: `${barLabelConfig.fontSize || 12}px`,
-                    color: barLabelConfig.color || '#000000'
-                };
+                const labelStyle = isDots
+                    ? {
+                        width: `${barLabelConfig.dotSize || 8}px`,
+                        height: `${barLabelConfig.dotSize || 8}px`,
+                        backgroundColor: barLabelConfig.dotColor || '#000000',
+                        borderRadius: '50%',
+                        display: 'inline-block'
+                    }
+                    : {
+                        fontSize: `${barLabelConfig.fontSize || 12}px`,
+                        color: barLabelConfig.color || '#000000'
+                    };
 
                 return (
                     <div
@@ -256,7 +268,11 @@ const StringComponent = ({
                                 : 'translate(-50%, 0)'
                         }}
                     >
-                        <span style={labelStyle}>{labelText}</span>
+                        {isDots ? (
+                            <span style={labelStyle} />
+                        ) : (
+                            <span style={labelStyle}>{labelText}</span>
+                        )}
                     </div>
                 );
             })}

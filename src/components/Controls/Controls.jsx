@@ -64,7 +64,7 @@ const Controls = ({ props, updateProps }) => {
                 <h3>String Settings</h3>
             </div>
 
-            <div className={styles.controlGroup}>
+            <div className={styles.controlGroupRow}>
                 <label>String Number:</label>
                 <input
                     type="number"
@@ -74,20 +74,7 @@ const Controls = ({ props, updateProps }) => {
                     onChange={(e) => handleChange('stringNumber', parseInt(e.target.value))}
                 />
             </div>
-
-            <div className={styles.controlGroup}>
-                <label>String Length:</label>
-                <input
-                    type="range"
-                    min="300"
-                    max="1000"
-                    value={props.size}
-                    onChange={(e) => handleChange('size', parseInt(e.target.value))}
-                />
-                <span>{props.size}px</span>
-            </div>
-
-            <div className={styles.controlGroup}>
+            <div className={styles.controlGroupRow}>
                 <label>Open Note:</label>
                 <select
                     value={props.openNote}
@@ -98,20 +85,7 @@ const Controls = ({ props, updateProps }) => {
                     ))}
                 </select>
             </div>
-
-            <div className={styles.controlGroup}>
-                <label>Open Note Offset:</label>
-                <input
-                    type="range"
-                    min="-50"
-                    max="0"
-                    value={props.openNoteOffset || -20}
-                    onChange={(e) => handleChange('openNoteOffset', parseInt(e.target.value))}
-                />
-                <span>{props.openNoteOffset || -20}px</span>
-            </div>
-
-            <div className={styles.controlGroup}>
+            <div className={styles.controlGroupRow}>
                 <label>Tonic:</label>
                 <select
                     value={props.tonic}
@@ -122,33 +96,18 @@ const Controls = ({ props, updateProps }) => {
                     ))}
                 </select>
             </div>
-
-            <div className={styles.controlGroup}>
-                <label>Pressed Fret:</label>
+            <div className={styles.controlGroupRow}>
+                <label>Fret Start:</label>
                 <input
                     type="range"
                     min="0"
                     max={props.fretsCount}
-                    value={props.pressedFret}
-                    onChange={(e) => handleChange('pressedFret', parseInt(e.target.value))}
+                    value={props.fretStart || 0}
+                    onChange={(e) => handleChange('fretStart', parseInt(e.target.value))}
                 />
-                <span>{props.pressedFret}</span>
+                <span>{props.fretStart || 0}</span>
             </div>
-
-            <div className={styles.controlGroup}>
-                <label>Finger Number:</label>
-                <input
-                    type="range"
-                    min="0"
-                    max="4"
-                    value={props.fingerNumber || 0}
-                    onChange={(e) => handleChange('fingerNumber', parseInt(e.target.value))}
-                />
-                <span>{props.fingerNumber || 0}</span>
-                <small>0 = no finger</small>
-            </div>
-
-            <div className={styles.controlGroup}>
+            <div className={styles.controlGroupRow}>
                 <label>Frets Count:</label>
                 <input
                     type="range"
@@ -159,8 +118,85 @@ const Controls = ({ props, updateProps }) => {
                 />
                 <span>{props.fretsCount}</span>
             </div>
+            <div className={styles.controlGroupRow}>
+                <label>StrLength:</label>
+                <input
+                    type="range"
+                    min="300"
+                    max="1000"
+                    value={props.size}
+                    onChange={(e) => handleChange('size', parseInt(e.target.value))}
+                />
+                <span>{props.size}px</span>
+            </div>
+            <div className={styles.controlGroupRow}>
+                <label>Open Note Offset:</label>
+                <input
+                    type="range"
+                    min="-50"
+                    max="0"
+                    value={props.openNoteOffset || -20}
+                    onChange={(e) => handleChange('openNoteOffset', parseInt(e.target.value))}
+                />
+                <span>{props.openNoteOffset || -20}px</span>
+            </div>
+            <div className={styles.controlGroupRow}>
+                <label>Pressed Count:</label>
+                <input
+                    type="range"
+                    min="0"
+                    max="6"
+                    value={(props.pressed?.length) || 0}
+                    onChange={(e) => {
+                        const newCount = parseInt(e.target.value);
+                        const current = Array.isArray(props.pressed) ? [...props.pressed] : [];
+                        let next = current.slice(0, newCount);
+                        while (next.length < newCount) {
+                            next.push({ fret: props.fretStart || 0, funger: 0 });
+                        }
+                        updateProps({ pressed: next });
+                    }}
+                />
+                <span>{(props.pressed?.length) || 0}</span>
+            </div>
 
-            <div className={styles.controlGroup}>
+            {(props.pressed || []).map((item, index) => (
+                <div key={`pressed-${index}`} className={styles.groupBox}>
+                    <div className={styles.controlGroupRow}>
+                        <label>{`Press #${index + 1} - Fret:`}</label>
+                        <input
+                            type="range"
+                            min={props.fretStart || 0}
+                            max={props.fretsCount}
+                            value={item.fret || (props.fretStart || 0)}
+                            onChange={(e) => {
+                                const fret = parseInt(e.target.value);
+                                const next = (props.pressed || []).map((p, i) => i === index ? { ...p, fret } : p);
+                                updateProps({ pressed: next });
+                            }}
+                        />
+                        <span>{item.fret || (props.fretStart || 0)}</span>
+                    </div>
+
+                    <div className={styles.controlGroupRow}>
+                        <label>{`Press #${index + 1} - Finger:`}</label>
+                        <input
+                            type="range"
+                            min="0"
+                            max="4"
+                            value={item.funger || 0}
+                            onChange={(e) => {
+                                const funger = parseInt(e.target.value);
+                                const next = (props.pressed || []).map((p, i) => i === index ? { ...p, funger } : p);
+                                updateProps({ pressed: next });
+                            }}
+                        />
+                        <span>{item.funger || 0}</span>
+                    </div>
+                </div>
+            ))}
+
+            <div className={styles.controlGroupRow}>
                 <label>String Color:</label>
                 <input
                     type="color"
@@ -169,7 +205,7 @@ const Controls = ({ props, updateProps }) => {
                 />
             </div>
 
-            <div className={styles.controlGroup}>
+            <div className={styles.controlGroupRow}>
                 <label>String Thickness:</label>
                 <input
                     type="range"
@@ -181,7 +217,7 @@ const Controls = ({ props, updateProps }) => {
                 <span>{props.stringThickness}px</span>
             </div>
 
-            <div className={styles.controlGroup}>
+            <div className={styles.controlGroupRow}>
                 <label>Spacing Type:</label>
                 <select
                     value={props.spacingType}
@@ -193,7 +229,7 @@ const Controls = ({ props, updateProps }) => {
             </div>
 
             {props.spacingType === 'fixed' && (
-                <div className={styles.controlGroup}>
+                <div className={styles.controlGroupRow}>
                     <label>Fixed Spacing:</label>
                     <input
                         type="range"
@@ -210,7 +246,7 @@ const Controls = ({ props, updateProps }) => {
                 <h3>Finger Number Configuration</h3>
             </div>
 
-            <div className={styles.controlGroup}>
+            <div className={styles.controlGroupRow}>
                 <label>Vertical Offset:</label>
                 <input
                     type="range"
@@ -222,7 +258,7 @@ const Controls = ({ props, updateProps }) => {
                 <span>{props.fingerNumberConfig?.offsetY || -25}px</span>
             </div>
 
-            <div className={styles.controlGroup}>
+            <div className={styles.controlGroupRow}>
                 <label>Font Size:</label>
                 <input
                     type="range"
@@ -234,7 +270,7 @@ const Controls = ({ props, updateProps }) => {
                 <span>{props.fingerNumberConfig?.fontSize || 14}px</span>
             </div>
 
-            <div className={styles.controlGroup}>
+            <div className={styles.controlGroupRow}>
                 <label>Color:</label>
                 <input
                     type="color"
@@ -247,7 +283,7 @@ const Controls = ({ props, updateProps }) => {
                 <h3>String Label Configuration</h3>
             </div>
 
-            <div className={styles.controlGroup}>
+            <div className={styles.controlGroupRow}>
                 <label>Show String Label:</label>
                 <input
                     type="checkbox"
@@ -258,7 +294,7 @@ const Controls = ({ props, updateProps }) => {
 
             {props.stringLabelConfig?.show && (
                 <>
-                    <div className={styles.controlGroup}>
+                    <div className={styles.controlGroupRow}>
                         <label>Label Size:</label>
                         <input
                             type="range"
@@ -270,7 +306,7 @@ const Controls = ({ props, updateProps }) => {
                         <span>{props.stringLabelConfig.size || 20}px</span>
                     </div>
 
-                    <div className={styles.controlGroup}>
+                    <div className={styles.controlGroupRow}>
                         <label>Distance from String:</label>
                         <input
                             type="range"
@@ -282,7 +318,7 @@ const Controls = ({ props, updateProps }) => {
                         <span>{props.stringLabelConfig.offsetX || -30}px</span>
                     </div>
 
-                    <div className={styles.controlGroup}>
+                    <div className={styles.controlGroupRow}>
                         <label>Shape:</label>
                         <select
                             value={props.stringLabelConfig.shape || 'circle'}
@@ -294,7 +330,7 @@ const Controls = ({ props, updateProps }) => {
                         </select>
                     </div>
 
-                    <div className={styles.controlGroup}>
+                    <div className={styles.controlGroupRow}>
                         <label>Background Color:</label>
                         <input
                             type="color"
@@ -303,7 +339,7 @@ const Controls = ({ props, updateProps }) => {
                         />
                     </div>
 
-                    <div className={styles.controlGroup}>
+                    <div className={styles.controlGroupRow}>
                         <label>Text Color:</label>
                         <input
                             type="color"
@@ -318,7 +354,7 @@ const Controls = ({ props, updateProps }) => {
                 <h3>Note Configuration</h3>
             </div>
 
-            <div className={styles.controlGroup}>
+            <div className={styles.controlGroupRow}>
                 <label>Configure for:</label>
                 <select
                     value={selectedInterval}
@@ -332,7 +368,7 @@ const Controls = ({ props, updateProps }) => {
                 </select>
             </div>
 
-            <div className={styles.controlGroup}>
+            <div className={styles.controlGroupRow}>
                 <label>Show Note:</label>
                 <input
                     type="checkbox"
@@ -341,7 +377,7 @@ const Controls = ({ props, updateProps }) => {
                 />
             </div>
 
-            <div className={styles.controlGroup}>
+            <div className={styles.controlGroupRow}>
                 <label>Center Note in Fret:</label>
                 <input
                     type="checkbox"
@@ -350,7 +386,7 @@ const Controls = ({ props, updateProps }) => {
                 />
             </div>
 
-    <div className={styles.controlGroup}>
+    <div className={styles.controlGroupRow}>
         <label>Show Intervals Instead of Notes:</label>
         <input
           type="checkbox"
@@ -359,7 +395,7 @@ const Controls = ({ props, updateProps }) => {
         />
       </div>
 
-            <div className={styles.controlGroup}>
+            <div className={styles.controlGroupRow}>
                 <label>Note Size:</label>
                 <input
                     type="range"
@@ -371,7 +407,7 @@ const Controls = ({ props, updateProps }) => {
                 <span>{getCurrentConfigValue('size') || 30}px</span>
             </div>
 
-            <div className={styles.controlGroup}>
+            <div className={styles.controlGroupRow}>
                 <label>Note Shape:</label>
                 <select
                     value={getCurrentConfigValue('shape') || 'circle'}
@@ -385,7 +421,7 @@ const Controls = ({ props, updateProps }) => {
                 </select>
             </div>
 
-            <div className={styles.controlGroup}>
+            <div className={styles.controlGroupRow}>
                 <label>Background Color:</label>
                 <input
                     type="color"
@@ -394,7 +430,7 @@ const Controls = ({ props, updateProps }) => {
                 />
             </div>
 
-            <div className={styles.controlGroup}>
+            <div className={styles.controlGroupRow}>
                 <label>Content Color:</label>
                 <input
                     type="color"
@@ -403,7 +439,7 @@ const Controls = ({ props, updateProps }) => {
                 />
             </div>
 
-            <div className={styles.controlGroup}>
+            <div className={styles.controlGroupRow}>
                 <label>Border Color:</label>
                 <input
                     type="color"
@@ -412,7 +448,7 @@ const Controls = ({ props, updateProps }) => {
                 />
             </div>
 
-            <div className={styles.controlGroup}>
+            <div className={styles.controlGroupRow}>
                 <label>Border Size:</label>
                 <input
                     type="range"
@@ -428,7 +464,7 @@ const Controls = ({ props, updateProps }) => {
                 <h3>Bar Labels Configuration</h3>
             </div>
 
-            <div className={styles.controlGroup}>
+            <div className={styles.controlGroupRow}>
                 <label>Show Bar Labels:</label>
                 <input
                     type="checkbox"
@@ -450,7 +486,7 @@ const Controls = ({ props, updateProps }) => {
                         <small>Comma-separated fret numbers</small>
                     </div>
 
-                    <div className={styles.controlGroup}>
+                    <div className={styles.controlGroupRow}>
                         <label>Label Size:</label>
                         <input
                             type="range"
@@ -462,18 +498,56 @@ const Controls = ({ props, updateProps }) => {
                         <span>{props.barLabelConfig.fontSize || 12}px</span>
                     </div>
 
-                    <div className={styles.controlGroup}>
-                        <label>Number Format:</label>
+                    <div className={styles.controlGroupRow}>
+                        <label>Pattern:</label>
                         <select
-                            value={props.barLabelConfig.numberFormat || 'arabic'}
-                            onChange={(e) => handleBarLabelConfigChange('numberFormat', e.target.value)}
+                            value={props.barLabelConfig.pattern || 'numbers'}
+                            onChange={(e) => handleBarLabelConfigChange('pattern', e.target.value)}
                         >
-                            <option value="arabic">Arabic (1,2,3...)</option>
-                            <option value="roman">Roman (I,II,III...)</option>
+                            <option value="numbers">Numbers</option>
+                            <option value="dots">Dots</option>
                         </select>
                     </div>
 
-                    <div className={styles.controlGroup}>
+                    {(props.barLabelConfig.pattern || 'numbers') === 'numbers' && (
+                        <div className={styles.controlGroupRow}>
+                            <label>Number Format:</label>
+                            <select
+                                value={props.barLabelConfig.numberFormat || 'arabic'}
+                                onChange={(e) => handleBarLabelConfigChange('numberFormat', e.target.value)}
+                            >
+                                <option value="arabic">Arabic (1,2,3...)</option>
+                                <option value="roman">Roman (I,II,III...)</option>
+                            </select>
+                        </div>
+                    )}
+
+                    {(props.barLabelConfig.pattern || 'numbers') === 'dots' && (
+                        <>
+                            <div className={styles.controlGroupRow}>
+                                <label>Dot Size:</label>
+                                <input
+                                    type="range"
+                                    min="4"
+                                    max="24"
+                                    value={props.barLabelConfig.dotSize || 8}
+                                    onChange={(e) => handleBarLabelConfigChange('dotSize', parseInt(e.target.value))}
+                                />
+                                <span>{props.barLabelConfig.dotSize || 8}px</span>
+                            </div>
+
+                            <div className={styles.controlGroupRow}>
+                                <label>Dot Color:</label>
+                                <input
+                                    type="color"
+                                    value={props.barLabelConfig.dotColor || '#000000'}
+                                    onChange={(e) => handleBarLabelConfigChange('dotColor', e.target.value)}
+                                />
+                            </div>
+                        </>
+                    )}
+
+                    <div className={styles.controlGroupRow}>
                         <label>Distance from String:</label>
                         <input
                             type="range"
@@ -485,7 +559,7 @@ const Controls = ({ props, updateProps }) => {
                         <span>{props.barLabelConfig.distanceFromString || 20}px</span>
                     </div>
 
-                    <div className={styles.controlGroup}>
+                    <div className={styles.controlGroupRow}>
                         <label>Position:</label>
                         <select
                             value={props.barLabelConfig.position || 'between'}
@@ -496,7 +570,7 @@ const Controls = ({ props, updateProps }) => {
                         </select>
                     </div>
 
-                    <div className={styles.controlGroup}>
+                    <div className={styles.controlGroupRow}>
                         <label>Label Color:</label>
                         <input
                             type="color"
