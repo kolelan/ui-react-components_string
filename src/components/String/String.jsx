@@ -72,15 +72,20 @@ const StringComponent = ({
         const intervalConfig = noteConfigs[interval] || {};
         const pressedConfig = (isPressed && enablePressedHighlight) ? (noteConfigs.pressed || {}) : {};
 
-        // Определяем что показывать: ноту или интервал (с приоритетом override)
-        const showInterval = (overrideShowInterval ?? baseConfig.showInterval) ? true : false;
+        // Сливаем конфиги в правильном порядке
+        const mergedConfig = {
+            ...baseConfig,
+            ...intervalConfig,
+            ...pressedConfig
+        };
+
+        // Определяем что показывать: ноту или интервал (с приоритетом override и затем merged)
+        const showInterval = (overrideShowInterval ?? mergedConfig.showInterval) ? true : false;
         const content = showInterval ? interval : note;
 
         return {
-            ...baseConfig,
-            ...intervalConfig,
-            ...pressedConfig,
-            content: content
+            ...mergedConfig,
+            content
         };
     };
 
