@@ -53,7 +53,7 @@ const StringComponent = ({
         return intervals[intervalIndex];
     };
 
-    const getNoteConfig = (note, isPressed) => {
+    const getNoteConfig = (note, isPressed, overrideShowInterval) => {
         const interval = calculateInterval(note);
 
         const baseConfig = {
@@ -72,8 +72,9 @@ const StringComponent = ({
         const intervalConfig = noteConfigs[interval] || {};
         const pressedConfig = (isPressed && enablePressedHighlight) ? (noteConfigs.pressed || {}) : {};
 
-        // Определяем что показывать: ноту или интервал
-        const content = baseConfig.showInterval ? interval : note;
+        // Определяем что показывать: ноту или интервал (с приоритетом override)
+        const showInterval = (overrideShowInterval ?? baseConfig.showInterval) ? true : false;
+        const content = showInterval ? interval : note;
 
         return {
             ...baseConfig,
@@ -200,7 +201,10 @@ const StringComponent = ({
                 const note = getNoteForFret(fret);
                 const pressedItem = selectedPressed.find(p => p.fret === fret);
                 const isPressed = !!pressedItem;
-                const noteConfig = getNoteConfig(note, isPressed);
+                const noteConfig = getNoteConfig(note, isPressed, pressedItem?.showInterval);
+                const offsetX = noteConfig.offsetX ?? 0;
+                const offsetY = noteConfig.offsetY ?? 0;
+                const centerInFret = noteConfig.centerInFret ?? false;
 
                 if (!noteConfig.showNote) return null;
 
@@ -208,10 +212,15 @@ const StringComponent = ({
                     <div
                         key={`note-${fret}`}
                         className={`${styles.notePosition} ${isPressed ? styles.pressed : ''}`}
-                        style={{ left: `${position}px` }}
+                        style={{
+                            left: `${position}px`,
+                            transform: centerInFret
+                                ? 'translate(-50%, -50%)'
+                                : `translate(-50%, -50%) translate(${offsetX}px, ${offsetY}px)`
+                        }}
                         onClick={() => handleFretClick(fret)}
                     >
-                        <Note {...noteConfig} />
+                        <Note {...{ ...noteConfig, offsetX: (noteConfig.textOffsetX ?? 0), offsetY: (noteConfig.textOffsetY ?? 0) }} />
                         {/* Отображение номера пальца для нажатого лада */}
                         {isPressed && (pressedItem?.funger ?? 0) > 0 && (
                             <div

@@ -193,6 +193,19 @@ const Controls = ({ props, updateProps }) => {
                         />
                         <span>{item.funger || 0}</span>
                     </div>
+
+                    <div className={styles.controlGroupRow}>
+                        <label>{`Press #${index + 1} - Show Interval:`}</label>
+                        <input
+                            type="checkbox"
+                            checked={!!item.showInterval}
+                            onChange={(e) => {
+                                const showInterval = e.target.checked;
+                                const next = (props.pressed || []).map((p, i) => i === index ? { ...p, showInterval } : p);
+                                updateProps({ pressed: next });
+                            }}
+                        />
+                    </div>
                 </div>
             ))}
 
@@ -408,6 +421,68 @@ const Controls = ({ props, updateProps }) => {
             </div>
 
             <div className={styles.controlGroupRow}>
+                <label>Text Font Size:</label>
+                <input
+                    type="range"
+                    min="8"
+                    max="48"
+                    value={getCurrentConfigValue('fontSize') || 16}
+                    onChange={(e) => handleNoteConfigChange('fontSize', parseInt(e.target.value))}
+                />
+                <span>{getCurrentConfigValue('fontSize') || 16}px</span>
+            </div>
+
+            <div className={styles.controlGroupRow}>
+                <label>Text Offset X:</label>
+                <input
+                    type="range"
+                    min="-50"
+                    max="50"
+                    value={(getCurrentConfigValue('textOffsetX') ?? 0)}
+                    onChange={(e) => handleNoteConfigChange('textOffsetX', parseInt(e.target.value))}
+                />
+                <span>{(getCurrentConfigValue('textOffsetX') ?? 0)}px</span>
+            </div>
+
+            <div className={styles.controlGroupRow}>
+                <label>Text Offset Y:</label>
+                <input
+                    type="range"
+                    min="-50"
+                    max="50"
+                    value={(getCurrentConfigValue('textOffsetY') ?? 0)}
+                    onChange={(e) => handleNoteConfigChange('textOffsetY', parseInt(e.target.value))}
+                />
+                <span>{(getCurrentConfigValue('textOffsetY') ?? 0)}px</span>
+            </div>
+
+            <div className={styles.controlGroupRow}>
+                <label>Offset X:</label>
+                <input
+                    type="range"
+                    min="-50"
+                    max="50"
+                    value={(getCurrentConfigValue('offsetX') ?? 0)}
+                    onChange={(e) => handleNoteConfigChange('offsetX', parseInt(e.target.value))}
+                    disabled={getCurrentConfigValue('centerInFret')}
+                />
+                <span>{(getCurrentConfigValue('offsetX') ?? 0)}px</span>
+            </div>
+
+            <div className={styles.controlGroupRow}>
+                <label>Offset Y:</label>
+                <input
+                    type="range"
+                    min="-50"
+                    max="50"
+                    value={(getCurrentConfigValue('offsetY') ?? 0)}
+                    onChange={(e) => handleNoteConfigChange('offsetY', parseInt(e.target.value))}
+                    disabled={getCurrentConfigValue('centerInFret')}
+                />
+                <span>{(getCurrentConfigValue('offsetY') ?? 0)}px</span>
+            </div>
+
+            <div className={styles.controlGroupRow}>
                 <label>Note Shape:</label>
                 <select
                     value={getCurrentConfigValue('shape') || 'circle'}
@@ -417,6 +492,12 @@ const Controls = ({ props, updateProps }) => {
                     <option value="square">Square</option>
                     <option value="triangle-down">Triangle Down</option>
                     <option value="triangle-up">Triangle Up</option>
+                    <option value="triangle-left">Triangle Left</option>
+                    <option value="triangle-right">Triangle Right</option>
+                    <option value="pentagon">Pentagon</option>
+                    <option value="hexagon">Hexagon</option>
+                    <option value="heptagon">Heptagon</option>
+                    <option value="octagon">Octagon</option>
                     <option value="diamond">Diamond</option>
                 </select>
             </div>
@@ -437,6 +518,28 @@ const Controls = ({ props, updateProps }) => {
                     value={getCurrentConfigValue('contentColor') || '#000000'}
                     onChange={(e) => handleNoteConfigChange('contentColor', e.target.value)}
                 />
+            </div>
+
+            <div className={styles.controlGroupRow}>
+                <label>Text Rotation:</label>
+                <input
+                    type="range"
+                    min="-180"
+                    max="180"
+                    value={(getCurrentConfigValue('contentRotate') ?? 0)}
+                    onChange={(e) => handleNoteConfigChange('contentRotate', parseInt(e.target.value))}
+                />
+                <span>{(getCurrentConfigValue('contentRotate') ?? 0)}°</span>
+            </div>
+
+            <div className={styles.controlGroupRow}>
+                <label>Preset:</label>
+                <div>
+                    <button type="button" onClick={() => handleNoteConfigChange('contentRotate', 0)}>0°</button>{' '}
+                    <button type="button" onClick={() => handleNoteConfigChange('contentRotate', 90)}>90°</button>{' '}
+                    <button type="button" onClick={() => handleNoteConfigChange('contentRotate', 180)}>180°</button>{' '}
+                    <button type="button" onClick={() => handleNoteConfigChange('contentRotate', 270)}>270°</button>
+                </div>
             </div>
 
             <div className={styles.controlGroupRow}>

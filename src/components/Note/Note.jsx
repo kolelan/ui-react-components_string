@@ -14,8 +14,11 @@ const Note = ({
                   fontSize = 16,
                   offsetX = 0,
                   offsetY = 0,
+                  contentOffsetX = undefined,
+                  contentOffsetY = undefined,
                   borderEnabled = true,
                   showShape = true, // Новый параметр для отображения фигуры
+                  contentRotate = 0,
                   className = ''
               }) => {
     const containerStyle = {
@@ -34,7 +37,7 @@ const Note = ({
         color: contentColor,
         opacity: contentOpacity,
         fontSize: `${fontSize}px`,
-        transform: `translate(${offsetX}px, ${offsetY}px)`
+        transform: `translate(${(contentOffsetX ?? offsetX)}px, ${(contentOffsetY ?? offsetY)}px) rotate(${contentRotate}deg)`
     };
 
     const getShapeClass = () => {
@@ -45,6 +48,12 @@ const Note = ({
             case 'square': return styles.square;
             case 'triangle-down': return styles.triangleDown;
             case 'triangle-up': return styles.triangleUp;
+            case 'triangle-left': return styles.triangleLeft;
+            case 'triangle-right': return styles.triangleRight;
+            case 'pentagon': return styles.pentagon;
+            case 'hexagon': return styles.hexagon;
+            case 'heptagon': return styles.heptagon;
+            case 'octagon': return styles.octagon;
             case 'diamond': return styles.diamond;
             default: return styles.circle;
         }
